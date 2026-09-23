@@ -1,0 +1,15 @@
+meta {
+  name: 4. List usage events
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/usage
+  body: none
+  auth: none
+}
+
+docs {
+  Usage history newest first. After the happy-path requests above, expect events for NONE, LONG_TITLES_BY_COMMENTS, and SHORT_TITLES_BY_POINTS.
+}

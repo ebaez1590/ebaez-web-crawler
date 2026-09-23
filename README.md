@@ -59,8 +59,17 @@ Each successful call appends a usage event with the applied filter.
 3. Import the environment `postman/local.postman_environment.json` and select **local** (`baseUrl=http://localhost:8080`).
 4. Run **Happy path** (entries → long → short → usage), then **Errors** (invalid type → 400).
 
+## Bruno
+
+Same request sequence as Postman, git-friendly `.bru` files:
+
+1. Start the app (`mvn spring-boot:run`).
+2. In Bruno: **Open Collection** → `bruno/ebaez-web-crawler/`.
+3. Select environment **local** (`baseUrl=http://localhost:8080`).
+4. Run **Happy path**, then **Errors**.
+
 ## Status
 
-Core APIs, Swagger UI, and Postman collection are available. Bruno collection comes next.
+Core APIs, Swagger UI, Postman, and Bruno collections are available.
 
 See [DESIGN.md](DESIGN.md) for architecture, word-count rules, and usage-field rationale.

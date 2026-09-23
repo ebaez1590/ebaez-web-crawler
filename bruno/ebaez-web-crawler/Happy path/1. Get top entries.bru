@@ -1,0 +1,15 @@
+meta {
+  name: 1. Get top entries
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/entries
+  body: none
+  auth: none
+}
+
+docs {
+  Scrapes the first 30 HN entries (filter NONE). Expect 200 and `filterApplied: NONE`.
+}

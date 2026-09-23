@@ -1,0 +1,19 @@
+meta {
+  name: 2. Filter long titles
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/entries/filter?type=long_titles
+  body: none
+  auth: none
+}
+
+params:query {
+  type: long_titles
+}
+
+docs {
+  Filter A: long titles by comments. Expect 200 and `filterApplied: LONG_TITLES_BY_COMMENTS`.
+}

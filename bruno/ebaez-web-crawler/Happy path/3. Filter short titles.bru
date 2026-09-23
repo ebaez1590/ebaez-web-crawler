@@ -1,0 +1,19 @@
+meta {
+  name: 3. Filter short titles
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/entries/filter?type=short_titles
+  body: none
+  auth: none
+}
+
+params:query {
+  type: short_titles
+}
+
+docs {
+  Filter B: short titles by points. Expect 200 and `filterApplied: SHORT_TITLES_BY_POINTS`.
+}

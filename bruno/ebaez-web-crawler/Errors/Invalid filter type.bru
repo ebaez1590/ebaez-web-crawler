@@ -1,0 +1,19 @@
+meta {
+  name: Invalid filter type
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/entries/filter?type=invalid
+  body: none
+  auth: none
+}
+
+params:query {
+  type: invalid
+}
+
+docs {
+  Unknown filter type. Expect 400 with a Bad Request body (`Unknown filter type: invalid`).
+}
