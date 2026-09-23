@@ -11,24 +11,28 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 
 /**
- * Orchestrates scraping and usage logging for entry retrieval.
+ * Orchestrates scraping, filtering, and usage logging.
  */
 @Service
 public class CrawlService {
 
     private final HackerNewsClient hackerNewsClient;
+    private final FilterService filterService;
     private final UsageService usageService;
     private final HackerNewsProperties properties;
     private final Clock clock;
 
     public CrawlService(
             HackerNewsClient hackerNewsClient,
+            FilterService filterService,
             UsageService usageService,
             HackerNewsProperties properties,
             Clock clock) {
         this.hackerNewsClient = hackerNewsClient;
+        this.filterService = filterService;
         this.usageService = usageService;
         this.properties = properties;
         this.clock = clock;
@@ -38,18 +42,27 @@ public class CrawlService {
      * Fetches the top entries without applying a title filter and logs usage as {@link FilterType#NONE}.
      */
     public List<HnEntry> getTopEntries() {
+        return getFilteredEntries(FilterType.NONE);
+    }
+
+    /**
+     * Fetches entries, applies the given filter, and logs usage for that filter.
+     */
+    public List<HnEntry> getFilteredEntries(FilterType filterType) {
+        Objects.requireNonNull(filterType, "filterType");
         Instant started = Instant.now(clock);
         try {
-            List<HnEntry> entries = hackerNewsClient.fetchTopEntries();
+            List<HnEntry> scraped = hackerNewsClient.fetchTopEntries();
+            List<HnEntry> result = filterService.apply(scraped, filterType);
             usageService.recordSuccess(
-                    FilterType.NONE,
-                    entries.size(),
+                    filterType,
+                    result.size(),
                     elapsedMs(started),
                     properties.getUrl());
-            return entries;
+            return result;
         } catch (HackerNewsFetchException ex) {
             usageService.recordFailure(
-                    FilterType.NONE,
+                    filterType,
                     elapsedMs(started),
                     properties.getUrl(),
                     ex.getMessage());

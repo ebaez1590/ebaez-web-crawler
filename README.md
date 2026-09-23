@@ -32,13 +32,20 @@ H2 console (local profile defaults): `http://localhost:8080/h2-console`
 ## API (so far)
 
 ```bash
-curl http://localhost:8080/api/entries
+# Raw top entries (filter NONE)
+curl "http://localhost:8080/api/entries"
+
+# Long titles (>5 words), ordered by comments
+curl "http://localhost:8080/api/entries/filter?type=long_titles"
+
+# Short titles (<=5 words), ordered by points
+curl "http://localhost:8080/api/entries/filter?type=short_titles"
 ```
 
-Returns the first 30 scraped entries and logs a usage event with filter `NONE`.
+Each successful call appends a usage event with the applied filter.
 
 ## Status
 
-Foundation, scraping, filters, usage persistence, and `GET /api/entries` are in place. Filter endpoints / Swagger / collections come next.
+Foundation, scraping, filters, usage persistence, and entry APIs (`/api/entries`, `/api/entries/filter`) are in place. Usage endpoint / Swagger / collections come next.
 
 See [DESIGN.md](DESIGN.md) for architecture, word-count rules, and usage-field rationale.

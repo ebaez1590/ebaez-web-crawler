@@ -32,6 +32,9 @@ class CrawlServiceTest {
     private HackerNewsClient hackerNewsClient;
 
     @Mock
+    private FilterService filterService;
+
+    @Mock
     private UsageService usageService;
 
     private HackerNewsProperties properties;
@@ -43,6 +46,7 @@ class CrawlServiceTest {
         properties.setUrl("https://news.ycombinator.com/");
         crawlService = new CrawlService(
                 hackerNewsClient,
+                filterService,
                 usageService,
                 properties,
                 Clock.fixed(FIXED, ZoneOffset.UTC)
@@ -53,12 +57,34 @@ class CrawlServiceTest {
     void getTopEntriesReturnsScrapedEntriesAndLogsSuccess() {
         List<HnEntry> scraped = List.of(new HnEntry(1, "Hello", 10, 2));
         when(hackerNewsClient.fetchTopEntries()).thenReturn(scraped);
+        when(filterService.apply(scraped, FilterType.NONE)).thenReturn(scraped);
 
         List<HnEntry> result = crawlService.getTopEntries();
 
         assertThat(result).isEqualTo(scraped);
         verify(usageService).recordSuccess(
                 FilterType.NONE,
+                1,
+                0L,
+                "https://news.ycombinator.com/"
+        );
+    }
+
+    @Test
+    void getFilteredEntriesAppliesFilterAndLogsThatFilter() {
+        List<HnEntry> scraped = List.of(
+                new HnEntry(1, "one two three four five six", 1, 9),
+                new HnEntry(2, "short", 50, 1)
+        );
+        List<HnEntry> filtered = List.of(scraped.get(0));
+        when(hackerNewsClient.fetchTopEntries()).thenReturn(scraped);
+        when(filterService.apply(scraped, FilterType.LONG_TITLES_BY_COMMENTS)).thenReturn(filtered);
+
+        List<HnEntry> result = crawlService.getFilteredEntries(FilterType.LONG_TITLES_BY_COMMENTS);
+
+        assertThat(result).isEqualTo(filtered);
+        verify(usageService).recordSuccess(
+                FilterType.LONG_TITLES_BY_COMMENTS,
                 1,
                 0L,
                 "https://news.ycombinator.com/"
