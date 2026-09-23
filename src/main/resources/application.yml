@@ -20,3 +20,10 @@ spring:
 
 server:
   port: 8080
+
+hn:
+  crawler:
+    url: https://news.ycombinator.com/
+    user-agent: ebaez-web-crawler/0.1 (+StackBuilders interview exercise)
+    timeout-ms: 10000
+    limit: 30
