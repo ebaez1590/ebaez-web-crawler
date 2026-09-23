@@ -10,7 +10,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Smoke coverage for HN-010 selectors. Full fixture suite comes in HN-011+.
+ * Smoke coverage for HN HTML selectors using inline snippets.
  */
 class HnHtmlParserTest {
 
