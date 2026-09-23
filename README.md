@@ -1,38 +1,38 @@
 # POC — Hacker News scraping (Java + Jsoup)
 
-POC aislado para mapear el DOM real de HN, validar selectores y delimitar tickets del backlog.  
-**No es** la solución final (sin Spring, API, usage DB ni Swagger).
+Standalone POC to map the real HN DOM, validate selectors, and shape backlog tickets.  
+**Not** the final solution (no Spring, API, usage DB, or Swagger).
 
-## Cómo correr
+## How to run
 
 ```bash
 cd poc
 
-# Tests (fixture offline, sin red)
+# Offline tests (fixture, no network)
 mvn test
 
-# Demo con fixture guardado
+# Demo with saved fixture
 mvn -q exec:java
 
-# Demo contra HN en vivo
+# Demo against live HN
 mvn -q exec:java -Dexec.args=live
 ```
 
-## Qué incluye
+## What it includes
 
-| Pieza | Rol |
-|-------|-----|
-| `HnPageParser` | Selectores Jsoup + parse de points/comments |
-| `WordCounter` | Regla del enunciado (símbolos / espacios) |
-| `PocMain` | Reporte + preview de filtros A/B |
-| `fixtures/hn-homepage.html` | Snapshot real para tests estables |
-| Tests JUnit | 30 entries, `discuss`→0, ejemplo word count |
+| Piece | Role |
+|-------|------|
+| `HnPageParser` | Jsoup selectors + points/comments parsing |
+| `WordCounter` | Brief rule (spaced words; strip symbols) |
+| `PocMain` | Report + filter A/B preview |
+| `fixtures/hn-homepage.html` | Real snapshot for stable tests |
+| JUnit tests | 30 entries, `discuss`→0, word-count example |
 
-## Buenas prácticas aplicadas en el POC
+## Practices applied in this POC
 
-1. **Fixture primero** — CI/tests no dependen de la red.
-2. **User-Agent identificable** + timeout en live fetch.
-3. **Límite explícito a 30** — no scrapeamos `?p=2`.
-4. **Fallbacks a 0** — `discuss`, score ausente, links raros.
-5. **Dominio mínimo** (`HnEntry` record) separado del I/O.
-6. **Flags de diagnóstico** (`discussOnly`, `missingScore`) para descobrir edge cases (no hacen falta en la API final).
+1. **Fixture first** — CI/tests do not depend on the network.
+2. **Identifiable User-Agent** + timeout on live fetch.
+3. **Hard limit of 30** — we do not follow `?p=2`.
+4. **Fallbacks to 0** — `discuss`, missing score, odd links.
+5. **Minimal domain** (`HnEntry` record) separated from I/O.
+6. **Diagnostic flags** (`discussOnly`, `missingScore`) to surface edge cases (not needed on the final API).
