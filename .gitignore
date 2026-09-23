@@ -30,3 +30,4 @@ Thumbs.db
 *.log
 *.h2.db
 *.mv.db
+data/

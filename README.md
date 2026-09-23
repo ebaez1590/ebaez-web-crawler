@@ -1,38 +1,34 @@
-# POC — Hacker News scraping (Java + Jsoup)
+# Hacker News Web Crawler
 
-Standalone POC to map the real HN DOM, validate selectors, and shape backlog tickets.  
-**Not** the final solution (no Spring, API, usage DB, or Swagger).
+Java solution for the StackBuilders technical exercise: scrape the first 30 entries from
+[Hacker News](https://news.ycombinator.com/), filter by title word count, and persist usage data.
+
+## Stack
+
+- Java 17
+- Maven
+- Spring Boot 3.5 (Web, Data JPA)
+- H2 (file-based locally; in-memory for tests)
+
+## Requirements
+
+- JDK 17+
+- Maven 3.9+
 
 ## How to run
 
 ```bash
-cd poc
-
-# Offline tests (fixture, no network)
+# Run tests
 mvn test
 
-# Demo with saved fixture
-mvn -q exec:java
-
-# Demo against live HN
-mvn -q exec:java -Dexec.args=live
+# Start the application
+mvn spring-boot:run
 ```
 
-## What it includes
+App listens on `http://localhost:8080`.  
+H2 console (local profile defaults): `http://localhost:8080/h2-console`  
+(JDBC URL: `jdbc:h2:file:./data/hn-crawler`)
 
-| Piece | Role |
-|-------|------|
-| `HnPageParser` | Jsoup selectors + points/comments parsing |
-| `WordCounter` | Brief rule (spaced words; strip symbols) |
-| `PocMain` | Report + filter A/B preview |
-| `fixtures/hn-homepage.html` | Real snapshot for stable tests |
-| JUnit tests | 30 entries, `discuss`→0, word-count example |
+## Status
 
-## Practices applied in this POC
-
-1. **Fixture first** — CI/tests do not depend on the network.
-2. **Identifiable User-Agent** + timeout on live fetch.
-3. **Hard limit of 30** — we do not follow `?p=2`.
-4. **Fallbacks to 0** — `discuss`, missing score, odd links.
-5. **Minimal domain** (`HnEntry` record) separated from I/O.
-6. **Diagnostic flags** (`discussOnly`, `missingScore`) to surface edge cases (not needed on the final API).
+Bootstrap complete (HN-001). Domain, scraping, filters, and API come in following commits.
