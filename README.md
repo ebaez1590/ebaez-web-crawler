@@ -52,8 +52,15 @@ curl "http://localhost:8080/api/usage"
 
 Each successful call appends a usage event with the applied filter.
 
+## Postman
+
+1. Start the app (`mvn spring-boot:run`).
+2. In Postman: **Import** → `postman/ebaez-web-crawler.postman_collection.json`.
+3. Import the environment `postman/local.postman_environment.json` and select **local** (`baseUrl=http://localhost:8080`).
+4. Run **Happy path** (entries → long → short → usage), then **Errors** (invalid type → 400).
+
 ## Status
 
-Core APIs and Swagger UI are available. Postman / Bruno collections come next.
+Core APIs, Swagger UI, and Postman collection are available. Bruno collection comes next.
 
 See [DESIGN.md](DESIGN.md) for architecture, word-count rules, and usage-field rationale.

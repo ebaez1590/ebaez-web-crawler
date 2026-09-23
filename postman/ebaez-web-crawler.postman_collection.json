@@ -1,0 +1,116 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "ebaez-web-crawler",
+    "description": "Manual demo collection for the Hacker News crawler API.\n\nRun against a local app (`mvn spring-boot:run`) using the `local` environment (`baseUrl=http://localhost:8080`).\n\nSuggested order: Happy path requests 1–3, then Errors, then Usage to inspect recorded filters.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ],
+  "item": [
+    {
+      "name": "Happy path",
+      "item": [
+        {
+          "name": "1. Get top entries",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/entries",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "entries"]
+            },
+            "description": "Scrapes the first 30 HN entries (filter NONE). Expect 200 and `filterApplied: NONE`."
+          },
+          "response": []
+        },
+        {
+          "name": "2. Filter long titles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/entries/filter?type=long_titles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "entries", "filter"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "long_titles",
+                  "description": "Titles with more than 5 words, ordered by comments desc"
+                }
+              ]
+            },
+            "description": "Filter A: long titles by comments. Expect 200 and `filterApplied: LONG_TITLES_BY_COMMENTS`."
+          },
+          "response": []
+        },
+        {
+          "name": "3. Filter short titles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/entries/filter?type=short_titles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "entries", "filter"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "short_titles",
+                  "description": "Titles with 5 or fewer words, ordered by points desc"
+                }
+              ]
+            },
+            "description": "Filter B: short titles by points. Expect 200 and `filterApplied: SHORT_TITLES_BY_POINTS`."
+          },
+          "response": []
+        },
+        {
+          "name": "4. List usage events",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/usage",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usage"]
+            },
+            "description": "Usage history newest first. After the happy-path requests above, expect events for NONE, LONG_TITLES_BY_COMMENTS, and SHORT_TITLES_BY_POINTS."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Errors",
+      "item": [
+        {
+          "name": "Invalid filter type",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/entries/filter?type=invalid",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "entries", "filter"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "invalid"
+                }
+              ]
+            },
+            "description": "Unknown filter type. Expect 400 with a Bad Request body (`Unknown filter type: invalid`)."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
