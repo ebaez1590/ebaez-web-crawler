@@ -31,4 +31,6 @@ H2 console (local profile defaults): `http://localhost:8080/h2-console`
 
 ## Status
 
-Bootstrap complete (HN-001). Domain, scraping, filters, and API come in following commits.
+Foundation, scraping, filters, and usage persistence are in place. REST API / Swagger / collections come next.
+
+See [DESIGN.md](DESIGN.md) for architecture, word-count rules, and usage-field rationale.

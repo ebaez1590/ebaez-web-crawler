@@ -6,6 +6,8 @@ import com.stackbuilders.hncrawler.persistence.UsageEventRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 import java.time.Clock;
@@ -76,9 +78,47 @@ class UsageServiceTest {
                 .hasMessageContaining("filterApplied");
     }
 
-    @org.springframework.boot.test.context.TestConfiguration
+    @Test
+    void recordSuccessSetsSuccessFlagAndOmitsErrorMessage() {
+        UsageEventEntity saved = usageService.recordSuccess(
+                FilterType.LONG_TITLES_BY_COMMENTS,
+                12,
+                88L,
+                "https://news.ycombinator.com/"
+        );
+
+        assertThat(saved.isSuccess()).isTrue();
+        assertThat(saved.getErrorMessage()).isNull();
+        assertThat(saved.getResultCount()).isEqualTo(12);
+        assertThat(saved.getDurationMs()).isEqualTo(88L);
+        assertThat(saved.getRequestedAt()).isEqualTo(FIXED_INSTANT);
+    }
+
+    @Test
+    void recordFailureSetsFailureFlagAndStoresErrorMessage() {
+        UsageEventEntity saved = usageService.recordFailure(
+                FilterType.NONE,
+                55L,
+                "https://news.ycombinator.com/",
+                "Timed out after 1000ms"
+        );
+
+        assertThat(saved.isSuccess()).isFalse();
+        assertThat(saved.getErrorMessage()).isEqualTo("Timed out after 1000ms");
+        assertThat(saved.getResultCount()).isNull();
+        assertThat(saved.getDurationMs()).isEqualTo(55L);
+    }
+
+    @Test
+    void recordFailureRequiresErrorMessage() {
+        assertThatThrownBy(() -> usageService.recordFailure(FilterType.NONE, 1L, null, null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessageContaining("errorMessage");
+    }
+
+    @TestConfiguration
     static class FixedClockConfig {
-        @org.springframework.context.annotation.Bean
+        @Bean
         Clock clock() {
             return Clock.fixed(FIXED_INSTANT, ZoneOffset.UTC);
         }

@@ -47,6 +47,31 @@ public class UsageService {
         return usageEventRepository.save(event);
     }
 
+    /**
+     * Records a successful crawl/filter interaction.
+     */
+    @Transactional
+    public UsageEventEntity recordSuccess(
+            FilterType filterApplied,
+            int resultCount,
+            long durationMs,
+            String sourceUrl) {
+        return record(filterApplied, resultCount, durationMs, sourceUrl, true, null);
+    }
+
+    /**
+     * Records a failed crawl/filter interaction.
+     */
+    @Transactional
+    public UsageEventEntity recordFailure(
+            FilterType filterApplied,
+            long durationMs,
+            String sourceUrl,
+            String errorMessage) {
+        Objects.requireNonNull(errorMessage, "errorMessage");
+        return record(filterApplied, null, durationMs, sourceUrl, false, errorMessage);
+    }
+
     @Transactional(readOnly = true)
     public List<UsageEventEntity> findAllNewestFirst() {
         return usageEventRepository.findAllByOrderByRequestedAtDesc();
