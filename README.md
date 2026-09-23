@@ -40,12 +40,15 @@ curl "http://localhost:8080/api/entries/filter?type=long_titles"
 
 # Short titles (<=5 words), ordered by points
 curl "http://localhost:8080/api/entries/filter?type=short_titles"
+
+# Usage history (newest first)
+curl "http://localhost:8080/api/usage"
 ```
 
 Each successful call appends a usage event with the applied filter.
 
 ## Status
 
-Foundation, scraping, filters, usage persistence, and entry APIs (`/api/entries`, `/api/entries/filter`) are in place. Usage endpoint / Swagger / collections come next.
+Core APIs are available: `/api/entries`, `/api/entries/filter`, and `/api/usage`. Swagger / collections come next.
 
 See [DESIGN.md](DESIGN.md) for architecture, word-count rules, and usage-field rationale.
