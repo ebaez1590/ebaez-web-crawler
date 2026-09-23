@@ -45,10 +45,15 @@ curl "http://localhost:8080/api/entries/filter?type=short_titles"
 curl "http://localhost:8080/api/usage"
 ```
 
+## Swagger / OpenAPI
+
+- Swagger UI: http://localhost:8080/swagger-ui.html
+- OpenAPI JSON: http://localhost:8080/v3/api-docs
+
 Each successful call appends a usage event with the applied filter.
 
 ## Status
 
-Core APIs are available: `/api/entries`, `/api/entries/filter`, and `/api/usage`. Swagger / collections come next.
+Core APIs and Swagger UI are available. Postman / Bruno collections come next.
 
 See [DESIGN.md](DESIGN.md) for architecture, word-count rules, and usage-field rationale.

@@ -71,4 +71,4 @@ Storage is **append-only**: each request inserts a new row; previous events are 
 | Jsoup | HN homepage is static HTML; CSS selectors + fixture tests |
 | Spring Boot | Clear layering, DI, REST, JPA testing |
 | H2 | Embedded DB; zero setup for reviewers |
-| springdoc / Postman / Bruno | Planned for API demo (later commits) |
+| springdoc / Postman / Bruno | API docs and demo collections |
