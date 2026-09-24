@@ -50,6 +50,12 @@ Java 17 · Maven · Spring Boot 3.5 (Web, Data JPA) · Jsoup · H2 · springdoc 
 
 Filters: **long** = `> 5` (order by comments); **short** = `≤ 5` (order by points). Ties break by entry `number` ascending.
 
+## Scraping scope (first page only)
+
+The brief asks for the **first 30** entries. Hacker News already renders those on a single homepage (`news.ycombinator.com/`); the site’s “More” link (`?p=2`) is therefore **out of scope** for this delivery.
+
+Pagination is a reasonable **future enhancement** if the product needed deeper listing or multi-page crawl (follow `?p=N`, dedupe by HN item id, bound depth/rate limits, and keep filters over the aggregated set). Until then, a hard `limit` of 30 on the first page keeps the solution aligned with the exercise and avoids unnecessary network I/O.
+
 ## Endpoints
 
 | Method | Path | Notes |
