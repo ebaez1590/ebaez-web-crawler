@@ -1,107 +1,109 @@
 # Hacker News Web Crawler
 
-Java solution for the StackBuilders technical exercise: scrape the first 30 entries from
+Java solution for the StackBuilders technical exercise: scrape the first **30** entries from
 [Hacker News](https://news.ycombinator.com/), filter by title word count, and persist usage data.
 
-## Stack
-
-- Java 17
-- Maven
-- Spring Boot 3.5 (Web, Data JPA)
-- H2 (file-based locally; in-memory for tests)
-- springdoc (Swagger UI)
-- Postman / Bruno collections for manual demos
-
-## Requirements
-
-- JDK 17+
-- Maven 3.9+
-
-## How to run
+## Quick start for reviewers (< 10 min)
 
 ```bash
-# Automated tests (no network — HN is mocked in E2E)
+# 1. Tests (no network — HN is mocked in E2E)
 mvn test
 
-# Start the application
+# 2. Run the app
 mvn spring-boot:run
 ```
 
-App listens on `http://localhost:8080`.  
-H2 console (local profile defaults): `http://localhost:8080/h2-console`  
-(JDBC URL: `jdbc:h2:file:./data/hn-crawler`)
+| Step | Action | Expect |
+|------|--------|--------|
+| 3 | Open [Swagger UI](http://localhost:8080/swagger-ui.html) | Interactive API docs |
+| 4 | `GET /api/entries` | ~30 entries, `filter: NONE` |
+| 5 | `GET /api/entries/filter?type=long_titles` | Titles with **>5** words, by comments ↓ |
+| 6 | `GET /api/entries/filter?type=short_titles` | Titles with **≤5** words, by points ↓ |
+| 7 | `GET /api/entries/filter?type=invalid` | `400 Bad Request` |
+| 8 | `GET /api/usage` | Newest-first usage events for steps 4–6 |
 
-## API
+Prefer Postman or Bruno? Import `postman/` or open `bruno/ebaez-web-crawler/` (same sequence). Details below.
+
+Design decisions: [DESIGN.md](DESIGN.md).
+
+---
+
+## Requirements
+
+- JDK **17+**
+- Maven **3.9+**
+- Network only for a live demo against HN (optional; `mvn test` does not need it)
+
+## Stack
+
+Java 17 · Maven · Spring Boot 3.5 (Web, Data JPA) · Jsoup · H2 · springdoc · JUnit 5 / AssertJ / Mockito · Postman + Bruno
+
+## Word count (brief rule)
+
+1. Split on whitespace.
+2. Strip non-letter / non-digit symbols from each token.
+3. Ignore empty tokens.
+4. Example: `This is - a self-explained example` → **5** words.
+
+Filters: **long** = `> 5` (order by comments); **short** = `≤ 5` (order by points). Ties break by entry `number` ascending.
+
+## Endpoints
+
+| Method | Path | Notes |
+|--------|------|-------|
+| `GET` | `/api/entries` | Top 30, no filter (`NONE`) |
+| `GET` | `/api/entries/filter?type=` | `long_titles` / `short_titles` (aliases: `long`, `short`, `none`, `all`) |
+| `GET` | `/api/usage` | Append-only history (timestamp + filter + extras) |
+
+Errors: invalid `type` → **400**; HN fetch failure → **502** (usage recorded with `success=false`).
 
 ```bash
-# Raw top entries (filter NONE)
 curl "http://localhost:8080/api/entries"
-
-# Long titles (>5 words), ordered by comments
 curl "http://localhost:8080/api/entries/filter?type=long_titles"
-
-# Short titles (<=5 words), ordered by points
 curl "http://localhost:8080/api/entries/filter?type=short_titles"
-
-# Usage history (newest first)
 curl "http://localhost:8080/api/usage"
 ```
 
-Each successful call appends a usage event with the applied filter. Invalid `type` → `400`. Upstream HN failure → `502`.
-
 ## Swagger / OpenAPI
 
-- Swagger UI: http://localhost:8080/swagger-ui.html
-- OpenAPI JSON: http://localhost:8080/v3/api-docs
+- UI: http://localhost:8080/swagger-ui.html
+- Spec: http://localhost:8080/v3/api-docs
 
 ## Postman
 
-1. Start the app (`mvn spring-boot:run`).
-2. In Postman: **Import** → `postman/ebaez-web-crawler.postman_collection.json`.
-3. Import the environment `postman/local.postman_environment.json` and select **local** (`baseUrl=http://localhost:8080`).
-4. Run **Happy path** (entries → long → short → usage), then **Errors** (invalid type → 400).
+1. `mvn spring-boot:run`
+2. Import `postman/ebaez-web-crawler.postman_collection.json`
+3. Import `postman/local.postman_environment.json` and select **local** (`baseUrl=http://localhost:8080`)
+4. Run **Happy path**, then **Errors**
 
 ## Bruno
 
-Same request sequence as Postman, git-friendly `.bru` files:
+1. `mvn spring-boot:run`
+2. Open collection `bruno/ebaez-web-crawler/`
+3. Select environment **local**
+4. Run **Happy path**, then **Errors**
 
-1. Start the app (`mvn spring-boot:run`).
-2. In Bruno: **Open Collection** → `bruno/ebaez-web-crawler/`.
-3. Select environment **local** (`baseUrl=http://localhost:8080`).
-4. Run **Happy path**, then **Errors**.
+## Manual smoke & optional live call
 
-## Manual smoke checklist
+After the app is up, the [Quick start](#quick-start-for-reviewers--10-min) table is the primary checklist.
 
-Use this after `mvn spring-boot:run` to demo the app locally (complements automated tests; does not replace them).
-
-### 1. Swagger UI
-
-1. Open http://localhost:8080/swagger-ui.html
-2. Try **GET /api/entries** → expect ~30 items, `filter: NONE`
-3. Try **GET /api/entries/filter** with `type=long_titles` → titles with >5 words, ordered by comments
-4. Try **GET /api/entries/filter** with `type=short_titles` → titles with ≤5 words, ordered by points
-5. Try **GET /api/entries/filter** with `type=invalid` → `400`
-6. Try **GET /api/usage** → newest-first events for the filters you just ran
-
-### 2. Postman or Bruno
-
-Run the collection **Happy path**, then **Errors**, and confirm `/api/usage` lists the successful calls.
-
-### 3. Optional live smoke (requires network)
-
-`mvn test` never hits the real site. A live call is optional and can be flaky if HN is slow or unavailable:
+Optional live smoke (**requires network**; not part of CI):
 
 ```bash
-# Requires network — scrapes https://news.ycombinator.com/
 curl -s "http://localhost:8080/api/entries" | head -c 400
 echo
 curl -s "http://localhost:8080/api/usage" | head -c 400
 ```
 
-Expect HTTP 200 and real titles when HN is reachable; otherwise the API returns `502` and records `success=false` in usage.
+## Local H2 console
 
-## Status
+With the app running: http://localhost:8080/h2-console  
+JDBC URL: `jdbc:h2:file:./data/hn-crawler`
 
-APIs, Swagger, Postman/Bruno collections, and the automated test pyramid (unit → WebMvc/DataJpa → mocked E2E) are in place.
+## Tests
 
-See [DESIGN.md](DESIGN.md) for architecture, word-count rules, and usage-field rationale.
+```bash
+mvn test
+```
+
+Pyramid: unit (WordCounter, FilterService) → `@WebMvcTest` / `@DataJpaTest` → `@SpringBootTest` E2E with mocked HN (no network).
