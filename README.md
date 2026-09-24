@@ -3,6 +3,9 @@
 Java solution for the StackBuilders technical exercise: scrape the first **30** entries from
 [Hacker News](https://news.ycombinator.com/), filter by title word count, and persist usage data.
 
+**Repository (for review):** https://github.com/ebaez1590/ebaez-web-crawler  
+Clone: `git clone git@github.com:ebaez1590/ebaez-web-crawler.git`
+
 ## Quick start for reviewers (< 10 min)
 
 ```bash
