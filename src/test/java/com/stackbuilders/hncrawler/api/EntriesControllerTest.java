@@ -107,7 +107,10 @@ class EntriesControllerTest {
     @DisplayName("GET /api/entries/filter without type → 400")
     void filterMissingTypeReturnsBadRequest() throws Exception {
         mockMvc.perform(get("/api/entries/filter"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("Query parameter 'type' is required"));
 
         verifyNoInteractions(crawlService);
     }
