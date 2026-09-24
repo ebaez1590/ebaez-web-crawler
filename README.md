@@ -107,3 +107,7 @@ mvn test
 ```
 
 Pyramid: unit (WordCounter, FilterService) → `@WebMvcTest` / `@DataJpaTest` → `@SpringBootTest` E2E with mocked HN (no network).
+
+## Git history
+
+Incremental conventional commits (`feat:`, `test:`, `docs:`, `chore:`). See [DESIGN.md](DESIGN.md#delivery--git-history) and `git log --oneline`.

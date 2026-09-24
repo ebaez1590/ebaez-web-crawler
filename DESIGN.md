@@ -111,3 +111,25 @@ Automated tests never depend on `news.ycombinator.com`. Parser tests use HTML fi
 | Errors | `400` invalid type; `502` upstream fetch failure |
 
 Demo docs: Swagger UI, Postman (`postman/`), Bruno (`bruno/`). See [README.md](README.md).
+
+## Delivery / git history
+
+Work was delivered as **small, reviewable commits** (not a single monolithic dump), using conventional English messages:
+
+| Prefix | Use |
+|--------|-----|
+| `chore:` | Bootstrap / tooling |
+| `feat:` | Domain, scraper, persistence, API, Swagger |
+| `test:` | Unit edges, fixtures, WebMvc/DataJpa, mocked E2E |
+| `docs:` | README, DESIGN, Postman/Bruno, smoke checklist |
+
+Approximate progression (mirrors the implementation plan):
+
+1. Bootstrap Spring Boot + H2  
+2. Domain (`HnEntry`, `FilterType`, `WordCounter`) + filters  
+3. Jsoup scrape + HTML fixtures (discuss / jobs)  
+4. Usage persistence + REST endpoints  
+5. springdoc + Postman/Bruno  
+6. Test pyramid hardening + README/DESIGN polish  
+
+Inspect with `git log --oneline`. No final `wip` squash required — the history is already incremental.
